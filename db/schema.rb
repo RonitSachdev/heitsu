@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_01_024916) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_051643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -35,6 +35,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_024916) do
     t.integer "max_attendees"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "group_join_requests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.string "status", default: "pending"
+    t.text "message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_group_join_requests_on_group_id"
+    t.index ["user_id", "group_id"], name: "index_group_join_requests_on_user_id_and_group_id", unique: true
+    t.index ["user_id"], name: "index_group_join_requests_on_user_id"
   end
 
   create_table "group_members", force: :cascade do |t|
@@ -118,12 +130,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_024916) do
     t.string "avatar"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "event_registrations", "events"
   add_foreign_key "event_registrations", "users"
+  add_foreign_key "group_join_requests", "groups"
+  add_foreign_key "group_join_requests", "users"
   add_foreign_key "group_members", "groups"
   add_foreign_key "group_members", "users"
   add_foreign_key "group_swipes", "groups"
