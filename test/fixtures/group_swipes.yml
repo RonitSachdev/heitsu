@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  swiper: one
+  group: one
+  direction: MyString
+
+two:
+  swiper: two
+  group: two
+  direction: MyString
