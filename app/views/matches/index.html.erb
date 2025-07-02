@@ -16,29 +16,36 @@
             <div class="matches-grid">
               <% @matches_with_messages.each do |match| %>
                 <% other_user = match.other_user(current_user) %>
-                <div class="match-card active-conversation">
+                <% match_data = @matches_data[match.id] %>
+                <% unread_count = match_data[:unread_count] %>
+                <% recent_message = match_data[:recent_message] %>
+                
+                <div class="match-card active-conversation <%= 'has-unread' if unread_count > 0 %>">
                   <%= link_to match_path(match), class: "match-link" do %>
                     <div class="match-header">
                       <div class="match-avatar">
                         <%= other_user.first_name.first.upcase %>
+                        <% if unread_count > 0 %>
+                          <div class="unread-badge"><%= unread_count %></div>
+                        <% end %>
                       </div>
                       <div class="match-info">
                         <h4><%= other_user.full_name %></h4>
                         <p class="match-username">@<%= other_user.username %></p>
-                        <p class="match-event">
-                          <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                          </svg>
-                          <%= match.event.title %>
-                        </p>
+                        <% if recent_message %>
+                          <p class="recent-message">
+                            <% if recent_message.sender == current_user %>
+                              <span class="message-sender">You:</span>
+                            <% end %>
+                            <%= truncate(recent_message.content, length: 60) %>
+                          </p>
+                          <small class="message-time"><%= time_ago_in_words(recent_message.created_at) %> ago</small>
+                        <% end %>
                       </div>
                       <div class="conversation-indicator">
-                        <div class="message-count">
-                          <%= @message_counts[match.id] || 0 %>
-                        </div>
+                        <% if unread_count > 0 %>
+                          <div class="unread-dot"></div>
+                        <% end %>
                         <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <polyline points="9,18 15,12 9,6"/>
                         </svg>
@@ -75,7 +82,7 @@
                             <line x1="8" y1="2" x2="8" y2="6"/>
                             <line x1="3" y1="10" x2="21" y2="10"/>
                           </svg>
-                          <%= match.event.title %>
+                          Matched at <%= match.event.title %>
                         </p>
                       </div>
                       <div class="new-match-indicator">
@@ -222,6 +229,29 @@
   font-weight: 700;
   font-size: 1.5rem;
   flex-shrink: 0;
+  position: relative;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid white;
+}
+
+.match-card.has-unread {
+  border-left-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .match-info {
@@ -258,9 +288,15 @@
 
 .conversation-indicator {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+}
+
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  background: #6366f1;
+  border-radius: 50%;
 }
 
 .message-count {
@@ -384,5 +420,23 @@
   .matches-section {
     padding: 1.5rem;
   }
+}
+
+.recent-message {
+  color: #374151;
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+  line-height: 1.4;
+}
+
+.message-sender {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.message-time {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin: 0;
 }
 </style> 

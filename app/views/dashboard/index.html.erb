@@ -4,7 +4,7 @@
     <div class="dashboard-header">
       <div class="welcome-content">
         <h1>Welcome back, <%= current_user.first_name %>!</h1>
-        <p class="subtitle">Ready to discover new connections and events?</p>
+        <p class="subtitle">Ready to discover new connections and exciting events?</p>
       </div>
       
       <div class="quick-actions">
@@ -49,51 +49,6 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-section">
-      <h2>Your Activity</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-number"><%= @stats[:registered_events] %></div>
-            <div class="stat-label">Events Registered</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-number"><%= @stats[:total_matches] %></div>
-            <div class="stat-label">Total Matches</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-number"><%= @stats[:unread_messages] %></div>
-            <div class="stat-label">Unread Messages</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Content Grid -->
     <div class="content-grid">
       <!-- Upcoming Events -->
@@ -108,37 +63,53 @@
           <% end %>
         </div>
         
-        <div class="content-list">
+        <div class="events-grid">
           <% if @upcoming_events.any? %>
             <% @upcoming_events.each do |event| %>
-              <div class="content-card">
-                <%= link_to event_path(event), class: "card-link" do %>
-                  <div class="card-header">
-                    <div class="event-category">
-                      <%= event.category %>
-                    </div>
+              <div class="event-card">
+                <%= link_to event_path(event), class: "event-link" do %>
+                  <div class="event-header">
                     <div class="event-date">
-                      <%= event.event_date.strftime("%b %d") %>
+                      <span class="date-day"><%= event.event_date.strftime("%d") %></span>
+                      <span class="date-month"><%= event.event_date.strftime("%b") %></span>
                     </div>
+                    <span class="event-category"><%= event.category %></span>
                   </div>
-                  <div class="card-body">
-                    <h4><%= event.title %></h4>
+                  
+                  <div class="event-body">
+                    <h4 class="event-title"><%= event.title %></h4>
+                    
                     <div class="event-details">
                       <div class="detail-item">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                           <circle cx="12" cy="10" r="3"/>
                         </svg>
                         <span><%= event.location %></span>
                       </div>
+                      
                       <div class="detail-item">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        <span><%= event.event_date.strftime("%I:%M %p") %></span>
+                      </div>
+                      
+                      <div class="detail-item">
+                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                           <circle cx="12" cy="7" r="4"/>
                         </svg>
                         <span><%= event.registered_users_count %> attending</span>
                       </div>
                     </div>
+                  </div>
+                  
+                  <div class="event-footer">
+                    <span class="spots-left">
+                      <%= event.available_spots > 0 ? "#{event.available_spots} spots left" : "Event full" %>
+                    </span>
                   </div>
                 <% end %>
               </div>
@@ -175,28 +146,41 @@
         
         <div class="content-list">
           <% if @recent_matches.any? %>
-            <% @recent_matches.each do |match| %>
-              <div class="content-card">
+            <% @recent_matches.each do |match_data| %>
+              <% match = match_data[:match] %>
+              <% other_user = match_data[:other_user] %>
+              <% unread_count = match_data[:unread_count] %>
+              <% recent_message = match_data[:recent_message] %>
+              
+              <div class="content-card <%= 'has-unread' if unread_count > 0 %>">
                 <%= link_to match_path(match), class: "card-link" do %>
                   <div class="match-card">
                     <div class="match-avatar">
-                      <%= match.user1 == current_user ? match.user2.first_name.first.upcase : match.user1.first_name.first.upcase %>
-                    </div>
-                    <div class="match-info">
-                      <h4><%= match.user1 == current_user ? match.user2.full_name : match.user1.full_name %></h4>
-                      <p class="match-event">Matched at <%= match.event.title %></p>
-                      <% if match.messages.any? %>
-                        <div class="message-preview">
-                          <div class="message-count">
-                            <%= match.messages.count %> messages
-                          </div>
-                        </div>
-                      <% else %>
-                        <div class="no-messages">
-                          <span>Say hello!</span>
-                        </div>
+                      <%= other_user.first_name.first.upcase %>
+                      <% if unread_count > 0 %>
+                        <div class="unread-badge"><%= unread_count %></div>
                       <% end %>
                     </div>
+                    <div class="match-info">
+                      <h4><%= other_user.full_name %></h4>
+                      <% if recent_message %>
+                        <p class="recent-message">
+                          <% if recent_message.sender == current_user %>
+                            <span class="message-sender">You:</span>
+                          <% end %>
+                          <%= truncate(recent_message.content, length: 50) %>
+                        </p>
+                        <p class="message-time"><%= time_ago_in_words(recent_message.created_at) %> ago</p>
+                      <% else %>
+                        <p class="no-messages">Start the conversation!</p>
+                        <p class="match-event">Matched at <%= match.event.title %></p>
+                      <% end %>
+                    </div>
+                    <% if unread_count > 0 %>
+                      <div class="unread-indicator">
+                        <div class="unread-dot"></div>
+                      </div>
+                    <% end %>
                   </div>
                 <% end %>
               </div>
@@ -216,6 +200,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick Stats Banner -->
+    <div class="stats-banner">
+      <div class="stat-item">
+        <div class="stat-number"><%= @stats[:registered_events] %></div>
+        <div class="stat-label">Events Joined</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-number"><%= @stats[:total_matches] %></div>
+        <div class="stat-label">Matches Made</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-number"><%= @stats[:unread_messages] %></div>
+        <div class="stat-label">New Messages</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -227,50 +229,52 @@
   }
 
   .dashboard-header {
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
   }
 
   .welcome-content {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
   }
 
   .welcome-content h1 {
     color: var(--color-black);
     margin-bottom: 0.5rem;
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
   }
 
   .subtitle {
     color: var(--color-grey-600);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     margin: 0;
+    font-weight: 400;
   }
 
   .quick-actions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    max-width: 900px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
     margin: 0 auto;
   }
 
   .action-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     background: var(--color-white);
     border: 2px solid var(--color-grey-200);
-    border-radius: var(--radius-xl);
-    padding: 1.5rem;
+    border-radius: var(--radius-2xl);
+    padding: 2rem;
     text-decoration: none;
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
   }
 
   .action-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
     border-color: var(--color-primary);
   }
 
@@ -278,16 +282,17 @@
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
     border-color: var(--color-primary);
     color: var(--color-black);
+    transform: scale(1.05);
   }
 
   .action-card.featured:hover {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-6px) scale(1.08);
   }
 
   .action-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-lg);
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-xl);
     background: var(--color-grey-100);
     display: flex;
     align-items: center;
@@ -296,84 +301,280 @@
   }
 
   .action-card.featured .action-icon {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     color: var(--color-black);
   }
 
   .action-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     stroke-width: 2;
   }
 
   .action-content h3 {
     color: var(--color-black);
-    margin: 0 0 0.25rem;
-    font-size: var(--font-size-lg);
-    font-weight: 600;
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
   }
 
   .action-content p {
     color: var(--color-grey-600);
     margin: 0;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
   }
 
   .action-card.featured .action-content p {
-    color: rgba(0, 0, 0, 0.7);
+    color: rgba(0, 0, 0, 0.8);
   }
 
-  .stats-section {
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2.5rem;
     margin-bottom: 3rem;
   }
 
-  .stats-section h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--color-black);
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .stat-card {
+  .content-section {
     background: var(--color-white);
-    border-radius: var(--radius-xl);
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-2xl);
     border: 1px solid var(--color-grey-200);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
     transition: var(--transition);
   }
 
-  .stat-card:hover {
-    transform: translateY(-2px);
+  .content-section:hover {
     box-shadow: var(--shadow-md);
   }
 
-  .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-lg);
-    background: var(--color-primary-light);
+  .section-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    color: var(--color-black);
+    justify-content: space-between;
+    padding: 2rem;
+    border-bottom: 1px solid var(--color-grey-200);
+    background: var(--color-grey-50);
   }
 
-  .stat-icon svg {
-    width: 24px;
-    height: 24px;
+  .section-header h3 {
+    margin: 0;
+    color: var(--color-black);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+  }
+
+  .view-all-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    transition: var(--transition);
+  }
+
+  .view-all-link:hover {
+    color: var(--color-primary-dark);
+  }
+
+  .view-all-link svg {
+    width: 16px;
+    height: 16px;
     stroke-width: 2;
   }
 
+  .content-list {
+    padding: 1.5rem;
+  }
+
+  .content-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .content-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .event-category {
+    background: var(--color-primary-light);
+    color: var(--color-black);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .event-date {
+    color: var(--color-grey-600);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+  }
+
+  .card-body h4 {
+    color: var(--color-black);
+    margin: 0 0 0.75rem;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-grey-600);
+    font-size: var(--font-size-base);
+  }
+
+  .detail-item .icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .match-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--radius-xl);
+    background: var(--color-white);
+    transition: var(--transition);
+  }
+
+  .match-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .match-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-black);
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+  }
+
+  .match-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .match-info h4 {
+    margin: 0 0 0.25rem;
+    color: var(--color-black);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .match-event {
+    color: var(--color-grey-600);
+    font-size: var(--font-size-base);
+    margin: 0 0 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .message-preview {
+    font-size: var(--font-size-sm);
+    color: var(--color-grey-500);
+  }
+
+  .message-count {
+    background: var(--color-primary-light);
+    color: var(--color-black);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    display: inline-block;
+    font-size: var(--font-size-xs);
+  }
+
+  .no-messages span {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--color-grey-400);
+    margin: 0 auto 1.5rem;
+  }
+
+  .empty-state h4 {
+    color: var(--color-black);
+    margin: 0 0 0.75rem;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .empty-state p {
+    color: var(--color-grey-600);
+    margin: 0 0 2rem;
+    font-size: var(--font-size-base);
+  }
+
+  .stats-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background: var(--color-white);
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--radius-2xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
   .stat-number {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
     font-weight: 800;
     color: var(--color-black);
     line-height: 1;
@@ -387,248 +588,10 @@
     margin: 0;
   }
 
-  .content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-  }
-
-  .content-section {
-    background: var(--color-white);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--color-grey-200);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--color-grey-200);
-    background: var(--color-grey-50);
-  }
-
-  .section-header h3 {
-    margin: 0;
-    color: var(--color-black);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-  }
-
-  .view-all-link {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    transition: var(--transition);
-  }
-
-  .view-all-link:hover {
-    color: var(--color-primary-dark);
-  }
-
-  .view-all-link svg {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2;
-  }
-
-  .content-list {
-    padding: 1rem;
-  }
-
-  .content-card {
-    margin-bottom: 1rem;
-  }
-
-  .content-card:last-child {
-    margin-bottom: 0;
-  }
-
-  .card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-  }
-
-  .event-category {
-    background: var(--color-primary-light);
-    color: var(--color-black);
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-
-  .event-date {
-    color: var(--color-grey-600);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-  }
-
-  .card-body h4 {
-    color: var(--color-black);
-    margin: 0 0 0.5rem;
-    font-size: var(--font-size-base);
-    font-weight: 600;
-  }
-
-  .event-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .detail-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-grey-600);
-    font-size: var(--font-size-sm);
-  }
-
-  .detail-item .icon {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2;
-    color: var(--color-primary);
-    flex-shrink: 0;
-  }
-
-  .match-card,
-  .group-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border: 1px solid var(--color-grey-200);
-    border-radius: var(--radius-lg);
-    background: var(--color-white);
-    transition: var(--transition);
-  }
-
-  .match-card:hover,
-  .group-card:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .match-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-black);
-    font-weight: 700;
-    font-size: var(--font-size-lg);
-    flex-shrink: 0;
-  }
-
-  .group-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-lg);
-    background: var(--color-primary-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-black);
-    flex-shrink: 0;
-  }
-
-  .group-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
-  }
-
-  .match-info,
-  .group-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .match-info h4,
-  .group-info h4 {
-    margin: 0 0 0.25rem;
-    color: var(--color-black);
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .match-event,
-  .group-event {
-    color: var(--color-grey-600);
-    font-size: var(--font-size-sm);
-    margin: 0 0 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .message-preview,
-  .group-members {
-    font-size: var(--font-size-xs);
-    color: var(--color-grey-500);
-  }
-
-  .message-count {
-    background: var(--color-primary-light);
-    color: var(--color-black);
-    padding: 0.125rem 0.5rem;
-    border-radius: var(--radius-full);
-    font-weight: 600;
-    display: inline-block;
-  }
-
-  .no-messages span {
-    color: var(--color-primary);
-    font-weight: 500;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 2rem 1rem;
-  }
-
-  .empty-icon {
-    width: 48px;
-    height: 48px;
-    color: var(--color-grey-400);
-    margin: 0 auto 1rem;
-  }
-
-  .empty-state h4 {
-    color: var(--color-black);
-    margin: 0 0 0.5rem;
-    font-size: var(--font-size-base);
-    font-weight: 600;
-  }
-
-  .empty-state p {
-    color: var(--color-grey-600);
-    margin: 0 0 1.5rem;
-    font-size: var(--font-size-sm);
+  .stat-divider {
+    width: 1px;
+    height: 3rem;
+    background: var(--color-grey-300);
   }
 
   /* Mobile Responsive */
@@ -641,8 +604,16 @@
       margin-bottom: 2rem;
     }
 
+    .welcome-content {
+      margin-bottom: 2rem;
+    }
+
     .welcome-content h1 {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-3xl);
+    }
+
+    .subtitle {
+      font-size: var(--font-size-lg);
     }
 
     .quick-actions {
@@ -651,99 +622,235 @@
     }
 
     .action-card {
-      padding: 1rem;
-    }
-
-    .stats-section {
-      margin-bottom: 2rem;
-    }
-
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
+      padding: 1.5rem;
       gap: 1rem;
     }
 
-    .stat-card {
-      padding: 1rem;
+    .action-card.featured {
+      transform: none;
     }
 
-    .stat-number {
-      font-size: var(--font-size-2xl);
+    .action-card.featured:hover {
+      transform: translateY(-4px);
     }
 
     .content-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    .section-header {
-      padding: 1rem;
+    .stats-banner {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 1.5rem;
     }
 
-    .content-list {
-      padding: 0.75rem;
-    }
-
-    .match-card,
-    .group-card {
-      padding: 0.75rem;
-    }
-
-    .match-avatar {
-      width: 40px;
-      height: 40px;
-      font-size: var(--font-size-base);
-    }
-
-    .group-icon {
-      width: 40px;
-      height: 40px;
-    }
-
-    .group-icon svg {
-      width: 20px;
-      height: 20px;
+    .stat-divider {
+      width: 3rem;
+      height: 1px;
     }
   }
 
   @media (max-width: 480px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
+    .section-header {
+      padding: 1.5rem;
     }
 
-    .quick-actions {
-      gap: 0.75rem;
-    }
-
-    .action-card {
-      gap: 0.75rem;
+    .content-list {
       padding: 1rem;
     }
 
-    .action-icon {
-      width: 40px;
-      height: 40px;
-    }
-
-    .action-icon svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .action-content h3 {
-      font-size: var(--font-size-base);
-    }
-
-    .content-grid {
+    .match-card {
+      padding: 1rem;
       gap: 1rem;
     }
 
-    .event-details {
-      gap: 0.125rem;
+    .match-avatar {
+      width: 48px;
+      height: 48px;
+      font-size: var(--font-size-lg);
     }
+  }
 
-    .detail-item {
-      font-size: var(--font-size-xs);
-    }
+  /* Events Grid Styles */
+  .events-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .event-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-grey-200);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .event-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .event-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--color-grey-50);
+    border: 1px solid var(--color-grey-200);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-width: 60px;
+  }
+
+  .date-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-black);
+    line-height: 1;
+  }
+
+  .date-month {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-grey-600);
+    text-transform: uppercase;
+    margin-top: 0.125rem;
+  }
+
+  .event-category {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .event-body {
+    padding: 1rem 1.25rem;
+  }
+
+  .event-title {
+    margin: 0 0 1rem;
+    color: var(--color-black);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-grey-600);
+    font-size: 0.875rem;
+  }
+
+  .detail-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--color-grey-500);
+    flex-shrink: 0;
+  }
+
+  .event-footer {
+    padding: 0.75rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--color-grey-100);
+  }
+
+  .spots-left {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-grey-700);
+  }
+
+  /* Messaging System Styles */
+  .content-card.has-unread {
+    border-left: 4px solid var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .match-avatar {
+    position: relative;
+  }
+
+  .unread-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--color-red-500);
+    color: var(--color-white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border: 2px solid var(--color-white);
+  }
+
+  .recent-message {
+    color: var(--color-grey-700);
+    font-size: var(--font-size-sm);
+    margin: 0.25rem 0;
+    line-height: 1.4;
+  }
+
+  .message-sender {
+    color: var(--color-grey-500);
+    font-weight: 600;
+  }
+
+  .message-time {
+    color: var(--color-grey-500);
+    font-size: var(--font-size-xs);
+    margin: 0;
+  }
+
+  .no-messages {
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+
+  .unread-indicator {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    margin-right: 0.5rem;
   }
 </style> 
