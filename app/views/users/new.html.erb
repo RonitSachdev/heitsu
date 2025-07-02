@@ -87,6 +87,14 @@
       <p>Already have an account? <%= link_to "Sign in", login_path, class: "auth-link" %></p>
     </div>
   </div>
+  
+  <!-- Decorative elements -->
+  <div class="auth-decoration">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-shape shape-4"></div>
+  </div>
 </div>
 
 <style>
@@ -95,17 +103,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-grey-50) 0%, var(--color-white) 50%, var(--color-primary-light) 100%);
   padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .auth-card {
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
-  max-width: 480px;
-  padding: 2rem;
+  max-width: 500px;
+  padding: 2.5rem;
+  border: 1px solid var(--color-grey-200);
+  position: relative;
+  z-index: 2;
 }
 
 .auth-header {
@@ -119,21 +132,34 @@
 }
 
 .auth-logo .logo-text {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #6366f1;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-black);
   text-decoration: none;
+  position: relative;
+}
+
+.auth-logo .logo-text::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background: var(--color-primary);
+  border-radius: 2px;
 }
 
 .auth-header h2 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-black);
   margin-bottom: 0.5rem;
 }
 
 .auth-header p {
-  color: #6b7280;
+  color: var(--color-grey-600);
   margin-bottom: 0;
 }
 
@@ -148,9 +174,9 @@
 }
 
 .form-errors {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.75rem;
+  background: var(--color-white);
+  border: 2px solid #ef4444;
+  border-radius: var(--radius-lg);
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -162,54 +188,143 @@
 }
 
 .form-errors li {
-  color: #991b1b;
-  font-size: 0.875rem;
+  color: #dc2626;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .form-errors li:last-child {
   margin-bottom: 0;
 }
 
+.form-errors li::before {
+  content: '⚠';
+  color: #ef4444;
+}
+
 .auth-submit {
   width: 100%;
   justify-content: center;
+  font-size: var(--font-size-base);
+  padding: 1rem 1.5rem;
 }
 
 .auth-footer {
   text-align: center;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-grey-200);
 }
 
 .auth-footer p {
-  color: #6b7280;
+  color: var(--color-grey-600);
   margin: 0;
 }
 
 .auth-link {
-  color: #6366f1;
-  font-weight: 500;
+  color: var(--color-black);
+  font-weight: 600;
   text-decoration: none;
 }
 
 .auth-link:hover {
-  color: #4f46e5;
+  color: var(--color-primary-dark);
   text-decoration: underline;
 }
 
+/* Decorative floating shapes */
+.auth-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 120px;
+  height: 120px;
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 80px;
+  height: 80px;
+  top: 75%;
+  right: 12%;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  top: 45%;
+  left: 3%;
+  animation-delay: 4s;
+}
+
+.shape-4 {
+  width: 100px;
+  height: 100px;
+  top: 20%;
+  right: 5%;
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(10px) rotate(240deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 @media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem;
+  }
+  
   .auth-card {
-    padding: 1.5rem;
+    padding: 2rem;
+    margin: 0.5rem;
   }
   
   .auth-header h2 {
     font-size: 1.5rem;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 0;
+  .auth-logo .logo-text {
+    font-size: 2rem;
+  }
+  
+  .floating-shape {
+    display: none; /* Hide decorative elements on mobile for performance */
   }
 }
 </style> 
