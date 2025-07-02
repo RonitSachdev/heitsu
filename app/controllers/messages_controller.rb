@@ -31,7 +31,7 @@ class MessagesController < ApplicationController
           ).first
           redirect_to match_path(match)
         end
-        
+
         format.json do
           render json: {
             success: true,
@@ -42,10 +42,10 @@ class MessagesController < ApplicationController
               name: @message.sender.full_name,
               username: @message.sender.username
             },
-            created_at: @message.created_at.strftime('%I:%M %p')
+            created_at: @message.created_at.strftime("%I:%M %p")
           }
         end
-        
+
         # Default to JSON if no specific format requested (for AJAX requests)
         format.all do
           render json: {
@@ -57,21 +57,21 @@ class MessagesController < ApplicationController
               name: @message.sender.full_name,
               username: @message.sender.username
             },
-            created_at: @message.created_at.strftime('%I:%M %p')
+            created_at: @message.created_at.strftime("%I:%M %p")
           }
         end
       end
     else
       respond_to do |format|
         format.html do
-          flash[:alert] = @message.errors.full_messages.join(', ')
+          flash[:alert] = @message.errors.full_messages.join(", ")
           redirect_back_or_to matches_path
         end
-        
+
         format.json do
           render json: { success: false, errors: @message.errors.full_messages }, status: :unprocessable_entity
         end
-        
+
         # Default to JSON for AJAX requests
         format.all do
           render json: { success: false, errors: @message.errors.full_messages }, status: :unprocessable_entity
@@ -88,7 +88,7 @@ class MessagesController < ApplicationController
 
   def can_message_user?(recipient)
     return false unless recipient
-    
+
     # Check if users have matched
     UserMatch.where(
       "(user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)",
@@ -99,4 +99,4 @@ class MessagesController < ApplicationController
   def redirect_back_or_to(fallback_location)
     redirect_to(request.referer || fallback_location)
   end
-end 
+end

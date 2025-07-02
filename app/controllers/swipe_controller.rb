@@ -5,14 +5,14 @@ class SwipeController < ApplicationController
 
   def event
     @event = Event.find(params[:event_id])
-    
+
     unless current_user.registered_for_event?(@event)
       flash[:alert] = "You must be registered for this event to start swiping"
       redirect_to @event and return
     end
 
     @users_to_swipe = current_user.users_to_swipe_for_event(@event).limit(10)
-    @current_user_json = current_user.to_json(only: [:id, :first_name])
+    @current_user_json = current_user.to_json(only: [ :id, :first_name ])
   end
 
   def swipe_user
@@ -41,18 +41,18 @@ class SwipeController < ApplicationController
 
     # Check for match if this was a right swipe
     match_data = nil
-    if direction == 'right'
+    if direction == "right"
       # Check if the other user also swiped right
       other_swipe = UserSwipe.find_by(
         swiper: swiped_user,
         swiped_user: current_user,
         event: event,
-        direction: 'right'
+        direction: "right"
       )
 
       if other_swipe
         # Create match (ensure user1_id < user2_id)
-        user1, user2 = [current_user, swiped_user].sort_by(&:id)
+        user1, user2 = [ current_user, swiped_user ].sort_by(&:id)
         match = UserMatch.find_or_create_by!(
           user1: user1,
           user2: user2,
@@ -76,4 +76,4 @@ class SwipeController < ApplicationController
       render json: { success: true }
     end
   end
-end 
+end

@@ -1,6 +1,6 @@
 class Message < ApplicationRecord
-  belongs_to :sender, class_name: 'User'
-  belongs_to :recipient, class_name: 'User'
+  belongs_to :sender, class_name: "User"
+  belongs_to :recipient, class_name: "User"
 
   # Validations
   validates :content, presence: true
@@ -9,18 +9,18 @@ class Message < ApplicationRecord
   validate :direct_message_validations
 
   # Scopes
-  scope :direct_messages, -> { where(message_type: 'direct') }
+  scope :direct_messages, -> { where(message_type: "direct") }
   scope :between_users, ->(user1, user2) {
     where(
       "(sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)",
       user1.id, user2.id, user2.id, user1.id
-    ).where(message_type: 'direct')
+    ).where(message_type: "direct")
   }
   scope :ordered, -> { order(:created_at) }
 
   # Methods
   def direct_message?
-    message_type == 'direct'
+    message_type == "direct"
   end
 
   # Get conversation between two users
@@ -33,7 +33,7 @@ class Message < ApplicationRecord
     # Get latest direct messages
     direct_conversations = joins(:recipient, :sender)
       .where("sender_id = ? OR recipient_id = ?", user.id, user.id)
-      .where(message_type: 'direct')
+      .where(message_type: "direct")
       .select("DISTINCT ON (LEAST(sender_id, recipient_id), GREATEST(sender_id, recipient_id)) messages.*")
       .order("LEAST(sender_id, recipient_id), GREATEST(sender_id, recipient_id), created_at DESC")
 

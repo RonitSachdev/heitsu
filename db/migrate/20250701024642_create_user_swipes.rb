@@ -8,7 +8,7 @@ class CreateUserSwipes < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
-    add_index :user_swipes, [:swiper_id, :swiped_user_id, :event_id], unique: true, name: 'index_user_swipes_on_swiper_swiped_user_event'
+
+    add_index :user_swipes, [ :swiper_id, :swiped_user_id, :event_id ], unique: true, name: 'index_user_swipes_on_swiper_swiped_user_event'
   end
 end

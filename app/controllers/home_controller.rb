@@ -8,4 +8,4 @@ class HomeController < ApplicationController
       # Show landing page for non-logged in users
     end
   end
-end 
+end

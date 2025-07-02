@@ -6,9 +6,9 @@ message_count = 0
 UserMatch.includes(:user1, :user2).each do |match|
   # Create 3-6 messages between matched users
   rand(3..6).times do |i|
-    sender = [match.user1, match.user2].sample
+    sender = [ match.user1, match.user2 ].sample
     recipient = sender == match.user1 ? match.user2 : match.user1
-    
+
     direct_messages = [
       "Hey! Great to match with you at #{match.event.title}!",
       "Looking forward to the event! Have you been to something like this before?",
@@ -26,9 +26,9 @@ UserMatch.includes(:user1, :user2).each do |match|
       "Nice to connect with someone who shares similar interests!",
       "Looking forward to meeting you in person!"
     ]
-    
+
     message_time = rand(1..5).days.ago
-    
+
     Message.create!(
       sender: sender,
       recipient: recipient,
@@ -41,4 +41,4 @@ UserMatch.includes(:user1, :user2).each do |match|
   end
 end
 
-puts "✅ Created #{message_count} messages" 
+puts "✅ Created #{message_count} messages"

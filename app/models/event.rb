@@ -2,7 +2,7 @@ class Event < ApplicationRecord
   # User relationships
   has_many :event_registrations, dependent: :destroy
   has_many :users, through: :event_registrations
-  
+
   # Swiping and matching relationships
   has_many :user_swipes, dependent: :destroy
   has_many :user_matches, dependent: :destroy
@@ -17,12 +17,12 @@ class Event < ApplicationRecord
   validate :event_date_cannot_be_in_past
 
   # Scopes
-  scope :upcoming, -> { where('event_date > ?', Time.current) }
-  scope :past, -> { where('event_date <= ?', Time.current) }
+  scope :upcoming, -> { where("event_date > ?", Time.current) }
+  scope :past, -> { where("event_date <= ?", Time.current) }
   scope :recent, -> { order(created_at: :desc) }
   scope :by_category, ->(category) { where(category: category) if category.present? }
-  scope :with_available_spots, -> { joins(:event_registrations).group('events.id').having('COUNT(event_registrations.id) < events.max_attendees') }
-  scope :by_location, ->(location) { where('location ILIKE ?', "%#{location}%") }
+  scope :with_available_spots, -> { joins(:event_registrations).group("events.id").having("COUNT(event_registrations.id) < events.max_attendees") }
+  scope :by_location, ->(location) { where("location ILIKE ?", "%#{location}%") }
 
   # Methods
   def full?
@@ -52,8 +52,8 @@ class Event < ApplicationRecord
   # Search functionality
   def self.search(query)
     return all if query.blank?
-    
-    where("title ILIKE ? OR description ILIKE ? OR location ILIKE ? OR category ILIKE ?", 
+
+    where("title ILIKE ? OR description ILIKE ? OR location ILIKE ? OR category ILIKE ?",
           "%#{query}%", "%#{query}%", "%#{query}%", "%#{query}%")
   end
 
@@ -61,7 +61,7 @@ class Event < ApplicationRecord
 
   def event_date_cannot_be_in_past
     return unless event_date && event_date < Time.current
-    
+
     errors.add(:event_date, "can't be in the past")
   end
 end

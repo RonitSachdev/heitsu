@@ -9,20 +9,20 @@ Rails.application.routes.draw do
   root "home#index"
 
   # Authentication routes
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  get '/signup', to: 'users#new'
-  post '/signup', to: 'users#create'
+  get "/login", to: "sessions#new"
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
+  get "/signup", to: "users#new"
+  post "/signup", to: "users#create"
 
   # User dashboard and profile
-  get '/dashboard', to: 'dashboard#index'
-  get '/profile', to: 'users#show'
-  get '/profile/edit', to: 'users#edit'
-  patch '/profile', to: 'users#update'
+  get "/dashboard", to: "dashboard#index"
+  get "/profile", to: "users#show"
+  get "/profile/edit", to: "users#edit"
+  patch "/profile", to: "users#update"
 
   # Events
-  resources :events, only: [:index, :show] do
+  resources :events, only: [ :index, :show ] do
     member do
       post :register
       delete :unregister
@@ -30,16 +30,16 @@ Rails.application.routes.draw do
   end
 
   # Swiping system
-  get '/swipe', to: 'swipe#index'
-  get '/swipe/events/:event_id', to: 'swipe#event', as: 'swipe_event'
-  post '/swipe/user', to: 'swipe#swipe_user'
+  get "/swipe", to: "swipe#index"
+  get "/swipe/events/:event_id", to: "swipe#event", as: "swipe_event"
+  post "/swipe/user", to: "swipe#swipe_user"
 
   # Matches and messaging
-  get '/matches', to: 'matches#index'
-  get '/matches/:id', to: 'matches#show', as: 'match'
-  resources :messages, only: [:create]
+  get "/matches", to: "matches#index"
+  get "/matches/:id", to: "matches#show", as: "match"
+  resources :messages, only: [ :create ]
 
   # PWA manifest
-  get '/manifest', to: 'pwa#manifest'
-  get '/service-worker', to: 'pwa#service_worker'
+  get "/manifest", to: "pwa#manifest"
+  get "/service-worker", to: "pwa#service_worker"
 end

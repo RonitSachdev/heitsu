@@ -4,40 +4,40 @@ puts "👥 Creating users..."
 def select_interests_for_user(user_type)
   case user_type
   when :music_lover
-    base_interests = ["🎵 Music", "🎸 Guitar", "🎤 Karaoke", "🎺 Jazz", "🎵 Music Festivals"]
+    base_interests = [ "🎵 Music", "🎸 Guitar", "🎤 Karaoke", "🎺 Jazz", "🎵 Music Festivals" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
-  when :tech_entrepreneur  
-    base_interests = ["💻 Technology", "🚀 Startups", "💼 Business", "📈 Finance"]
+  when :tech_entrepreneur
+    base_interests = [ "💻 Technology", "🚀 Startups", "💼 Business", "📈 Finance" ]
     additional = User::AVAILABLE_INTERESTS.sample(4)
   when :artist
-    base_interests = ["🎨 Art", "📸 Photography", "🎭 Museums", "🎨 Painting", "✍️ Writing"]
+    base_interests = [ "🎨 Art", "📸 Photography", "🎭 Museums", "🎨 Painting", "✍️ Writing" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :athlete
-    base_interests = ["🏃‍♂️ Running", "🏋️‍♂️ Fitness", "🏀 Basketball", "⚽ Soccer", "🏈 Football"]
+    base_interests = [ "🏃‍♂️ Running", "🏋️‍♂️ Fitness", "🏀 Basketball", "⚽ Soccer", "🏈 Football" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :chef
-    base_interests = ["🍕 Food", "👩‍🍳 Cooking", "🍷 Wine", "🍜 Ramen", "🍣 Sushi"]
+    base_interests = [ "🍕 Food", "👩‍🍳 Cooking", "🍷 Wine", "🍜 Ramen", "🍣 Sushi" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :comedian
-    base_interests = ["🎪 Comedy", "🎭 Theater", "🍺 Beer", "🎮 Gaming", "🎬 Movies"]
+    base_interests = [ "🎪 Comedy", "🎭 Theater", "🍺 Beer", "🎮 Gaming", "🎬 Movies" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :teacher
-    base_interests = ["📚 Reading", "✍️ Writing", "☕ Coffee", "🎭 Theater", "🐱 Cats"]
+    base_interests = [ "📚 Reading", "✍️ Writing", "☕ Coffee", "🎭 Theater", "🐱 Cats" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :dancer
-    base_interests = ["💃 Dancing", "🎵 Music", "🏖️ Beach", "🌮 Mexican Food", "🎭 Shows"]
+    base_interests = [ "💃 Dancing", "🎵 Music", "🏖️ Beach", "🌮 Mexican Food", "🎭 Shows" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :photographer
-    base_interests = ["📸 Photography", "🥾 Hiking", "🌿 Nature", "✈️ Travel", "🐕 Dogs"]
+    base_interests = [ "📸 Photography", "🥾 Hiking", "🌿 Nature", "✈️ Travel", "🐕 Dogs" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   when :outdoor_guide
-    base_interests = ["🥾 Hiking", "🧗‍♂️ Rock Climbing", "🏕️ Camping", "🚴‍♂️ Biking", "🍺 Craft Beer"]
+    base_interests = [ "🥾 Hiking", "🧗‍♂️ Rock Climbing", "🏕️ Camping", "🚴‍♂️ Biking", "🍺 Craft Beer" ]
     additional = User::AVAILABLE_INTERESTS.sample(3)
   else
     base_interests = []
     additional = User::AVAILABLE_INTERESTS.sample(6)
   end
-  
+
   (base_interests + additional).uniq.first(8).to_json
 end
 
@@ -52,7 +52,7 @@ users_data = [
     date_of_birth: 25.years.ago,
     bio: "Adventure seeker and coffee enthusiast. Love exploring new places and meeting interesting people!",
     city: "San Francisco, CA",
-    interests: ["🎵 Music", "🥾 Hiking", "📚 Reading", "☕ Coffee", "🎭 Theater"].to_json,
+    interests: [ "🎵 Music", "🥾 Hiking", "📚 Reading", "☕ Coffee", "🎭 Theater" ].to_json,
     occupation: "Software Developer",
     education: "UC Berkeley - Computer Science",
     height: "5'6\""
@@ -70,7 +70,7 @@ users_data = [
     occupation: "Tech Entrepreneur",
     education: "Stanford University - Computer Science",
     height: "5'11\"",
-    photos: ["bob_main.jpg", "bob_conference.jpg", "bob_running.jpg", "bob_office.jpg"].to_json
+    photos: [ "bob_main.jpg", "bob_conference.jpg", "bob_running.jpg", "bob_office.jpg" ].to_json
   },
   {
     email: "carol@example.com",
@@ -85,7 +85,7 @@ users_data = [
     occupation: "Graphic Designer",
     education: "Parsons School of Design - Fine Arts",
     height: "5'4\"",
-    photos: ["carol_main.jpg", "carol_painting.jpg", "carol_gallery.jpg", "carol_wine.jpg"].to_json
+    photos: [ "carol_main.jpg", "carol_painting.jpg", "carol_gallery.jpg", "carol_wine.jpg" ].to_json
   },
   {
     email: "david@example.com",
@@ -100,7 +100,7 @@ users_data = [
     occupation: "Personal Trainer",
     education: "UCLA - Kinesiology",
     height: "6'2\"",
-    photos: ["david_main.jpg", "david_marathon.jpg", "david_gym.jpg", "david_sports.jpg"].to_json
+    photos: [ "david_main.jpg", "david_marathon.jpg", "david_gym.jpg", "david_sports.jpg" ].to_json
   },
   {
     email: "emma@example.com",
@@ -115,7 +115,7 @@ users_data = [
     occupation: "Chef",
     education: "Culinary Institute of America",
     height: "5'5\"",
-    photos: ["emma_main.jpg", "emma_cooking.jpg", "emma_restaurant.jpg", "emma_food.jpg"].to_json
+    photos: [ "emma_main.jpg", "emma_cooking.jpg", "emma_restaurant.jpg", "emma_food.jpg" ].to_json
   },
   {
     email: "frank@example.com",
@@ -130,7 +130,7 @@ users_data = [
     occupation: "Marketing Manager",
     education: "University of Washington - Communications",
     height: "5'9\"",
-    photos: ["frank_main.jpg", "frank_comedy.jpg", "frank_friends.jpg", "frank_seattle.jpg"].to_json
+    photos: [ "frank_main.jpg", "frank_comedy.jpg", "frank_friends.jpg", "frank_seattle.jpg" ].to_json
   },
   {
     email: "grace@example.com",
@@ -145,7 +145,7 @@ users_data = [
     occupation: "English Teacher",
     education: "Harvard University - English Literature",
     height: "5'3\"",
-    photos: ["grace_main.jpg", "grace_books.jpg", "grace_coffee.jpg", "grace_teaching.jpg"].to_json
+    photos: [ "grace_main.jpg", "grace_books.jpg", "grace_coffee.jpg", "grace_teaching.jpg" ].to_json
   },
   {
     email: "henry@example.com",
@@ -160,7 +160,7 @@ users_data = [
     occupation: "Dance Instructor",
     education: "Florida International University - Performing Arts",
     height: "5'10\"",
-    photos: ["henry_main.jpg", "henry_dancing.jpg", "henry_beach.jpg", "henry_performance.jpg"].to_json
+    photos: [ "henry_main.jpg", "henry_dancing.jpg", "henry_beach.jpg", "henry_performance.jpg" ].to_json
   },
   {
     email: "isabella@example.com",
@@ -175,7 +175,7 @@ users_data = [
     occupation: "Photographer",
     education: "Art Institute of Colorado - Photography",
     height: "5'7\"",
-    photos: ["isabella_main.jpg", "isabella_mountains.jpg", "isabella_camera.jpg", "isabella_nature.jpg"].to_json
+    photos: [ "isabella_main.jpg", "isabella_mountains.jpg", "isabella_camera.jpg", "isabella_nature.jpg" ].to_json
   },
   {
     email: "jack@example.com",
@@ -190,7 +190,7 @@ users_data = [
     occupation: "Outdoor Guide",
     education: "Oregon State University - Recreation",
     height: "6'0\"",
-    photos: ["jack_main.jpg", "jack_climbing.jpg", "jack_hiking.jpg", "jack_festival.jpg"].to_json
+    photos: [ "jack_main.jpg", "jack_climbing.jpg", "jack_hiking.jpg", "jack_festival.jpg" ].to_json
   }
 ]
 
@@ -202,4 +202,4 @@ puts "✅ Created #{created_users.count} users with rich profiles"
 puts "📋 Available interests: #{User::AVAILABLE_INTERESTS.count} options"
 
 # Store users in a global variable for other seed files
-$seed_users = created_users 
+$seed_users = created_users

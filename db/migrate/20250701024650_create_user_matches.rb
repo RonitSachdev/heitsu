@@ -7,7 +7,7 @@ class CreateUserMatches < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
-    add_index :user_matches, [:user1_id, :user2_id, :event_id], unique: true, name: 'index_user_matches_on_user1_user2_event'
+
+    add_index :user_matches, [ :user1_id, :user2_id, :event_id ], unique: true, name: 'index_user_matches_on_user1_user2_event'
   end
 end

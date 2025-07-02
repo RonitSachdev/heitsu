@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  skip_before_action :require_login, except: [:destroy]
+  skip_before_action :require_login, except: [ :destroy ]
 
   def new
     redirect_to dashboard_path if logged_in?
@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by(email: params[:email].downcase)
-    
+
     if user&.authenticate(params[:password])
       session[:user_id] = user.id
       flash[:notice] = "Welcome back, #{user.first_name}!"
@@ -23,4 +23,4 @@ class SessionsController < ApplicationController
     flash[:notice] = "You have been logged out"
     redirect_to root_path
   end
-end 
+end

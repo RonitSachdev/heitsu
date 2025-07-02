@@ -9,20 +9,20 @@ class EventRegistration < ApplicationRecord
   validate :event_not_past
 
   # Scopes
-  scope :active, -> { where(status: 'registered') }
-  scope :cancelled, -> { where(status: 'cancelled') }
+  scope :active, -> { where(status: "registered") }
+  scope :cancelled, -> { where(status: "cancelled") }
 
   # Methods
   def cancel!
-    update!(status: 'cancelled')
+    update!(status: "cancelled")
   end
 
   def active?
-    status == 'registered'
+    status == "registered"
   end
 
   def cancelled?
-    status == 'cancelled'
+    status == "cancelled"
   end
 
   # Set default status
@@ -31,18 +31,18 @@ class EventRegistration < ApplicationRecord
   private
 
   def set_default_status
-    self.status ||= 'registered'
+    self.status ||= "registered"
   end
 
   def event_not_full
-    return unless event&.full? && status == 'registered'
-    
+    return unless event&.full? && status == "registered"
+
     errors.add(:event, "is full")
   end
 
   def event_not_past
     return unless event&.past?
-    
+
     errors.add(:event, "has already passed")
   end
 end

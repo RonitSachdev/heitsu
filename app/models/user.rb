@@ -21,18 +21,18 @@ class User < ApplicationRecord
   has_many :events, through: :event_registrations
 
   # User swiping relationships
-  has_many :user_swipes, foreign_key: 'swiper_id', dependent: :destroy
+  has_many :user_swipes, foreign_key: "swiper_id", dependent: :destroy
   has_many :swiped_users, through: :user_swipes, source: :swiped_user
-  has_many :received_swipes, class_name: 'UserSwipe', foreign_key: 'swiped_user_id', dependent: :destroy
+  has_many :received_swipes, class_name: "UserSwipe", foreign_key: "swiped_user_id", dependent: :destroy
   has_many :swipers, through: :received_swipes, source: :swiper
-  
+
   # Match relationships
-  has_many :matches_as_user1, class_name: 'UserMatch', foreign_key: 'user1_id', dependent: :destroy
-  has_many :matches_as_user2, class_name: 'UserMatch', foreign_key: 'user2_id', dependent: :destroy
-  
+  has_many :matches_as_user1, class_name: "UserMatch", foreign_key: "user1_id", dependent: :destroy
+  has_many :matches_as_user2, class_name: "UserMatch", foreign_key: "user2_id", dependent: :destroy
+
   # Message relationships
-  has_many :sent_messages, class_name: 'Message', foreign_key: 'sender_id', dependent: :destroy
-  has_many :received_messages, class_name: 'Message', foreign_key: 'recipient_id', dependent: :destroy
+  has_many :sent_messages, class_name: "Message", foreign_key: "sender_id", dependent: :destroy
+  has_many :received_messages, class_name: "Message", foreign_key: "recipient_id", dependent: :destroy
 
   # Validations
   validates :email, presence: true, uniqueness: { case_sensitive: false }
@@ -51,7 +51,7 @@ class User < ApplicationRecord
 
   # Get matched users
   def matched_users
-    match_ids = matches.pluck(:user1_id, :user2_id).flatten.uniq - [id]
+    match_ids = matches.pluck(:user1_id, :user2_id).flatten.uniq - [ id ]
     User.where(id: match_ids)
   end
 
@@ -64,10 +64,10 @@ class User < ApplicationRecord
   def users_to_swipe_for_event(event)
     # Get all users registered for this event
     registered_users = event.users.where.not(id: self.id)
-    
+
     # Exclude users already swiped on
     swiped_user_ids = user_swipes.where(event: event).pluck(:swiped_user_id)
-    
+
     registered_users.where.not(id: swiped_user_ids)
   end
 
@@ -86,10 +86,10 @@ class User < ApplicationRecord
   def recent_events
     events.joins(:event_registrations)
           .where(event_registrations: { user: self })
-          .order('event_registrations.created_at DESC')
+          .order("event_registrations.created_at DESC")
   end
 
-  # Get recent matches for profile  
+  # Get recent matches for profile
   def recent_matches
     matches.order(created_at: :desc)
   end
@@ -117,7 +117,7 @@ class User < ApplicationRecord
     return false unless AVAILABLE_INTERESTS.include?(interest)
     current_interests = interests_array
     return true if current_interests.include?(interest)
-    
+
     current_interests << interest
     self.interests_array = current_interests
     true
@@ -165,14 +165,14 @@ class User < ApplicationRecord
 
   def has_complete_profile?
     [
-      first_name, last_name, bio, date_of_birth, 
+      first_name, last_name, bio, date_of_birth,
       city, interests, occupation, education, height
     ].all?(&:present?)
   end
 
   def profile_completion_percentage
     fields = [
-      first_name, last_name, bio, date_of_birth, 
+      first_name, last_name, bio, date_of_birth,
       city, interests, occupation, education, height, photos
     ]
     completed_fields = fields.count(&:present?)
@@ -182,14 +182,14 @@ class User < ApplicationRecord
   # Get interests grouped by category for easier selection
   def self.interests_by_category
     {
-      "Entertainment" => ["🎵 Music", "🎬 Movies", "📚 Reading", "🎮 Gaming", "🎭 Theater", "🎪 Comedy", "🎤 Karaoke", "📺 TV Shows"],
-      "Sports & Fitness" => ["🏃‍♂️ Running", "🏋️‍♂️ Fitness", "🏀 Basketball", "⚽ Soccer", "🏈 Football", "🎾 Tennis", "🏌️‍♂️ Golf", "🏊‍♀️ Swimming", "🧘‍♀️ Yoga"],
-      "Outdoor Activities" => ["🥾 Hiking", "🧗‍♂️ Rock Climbing", "🏕️ Camping", "🚴‍♂️ Biking", "🏖️ Beach", "🌿 Nature", "⛷️ Skiing", "🏄‍♀️ Surfing"],
-      "Food & Drink" => ["🍕 Food", "👩‍🍳 Cooking", "🍷 Wine", "☕ Coffee", "🍺 Beer", "🍜 Ramen", "🍣 Sushi", "🌮 Mexican Food", "🍺 Craft Beer"],
-      "Arts & Culture" => ["🎨 Art", "📸 Photography", "🎭 Museums", "🎸 Guitar", "🎺 Jazz", "🎨 Painting", "🎭 Acting", "✍️ Writing"],
-      "Technology & Business" => ["💻 Technology", "🚀 Startups", "💼 Business", "📈 Finance", "🔬 Science"],
-      "Animals & Nature" => ["🐕 Dogs", "🐱 Cats", "🌱 Gardening", "🌿 Nature"],
-      "Lifestyle" => ["✈️ Travel", "🚶‍♀️ Walking", "🎲 Board Games", "🌟 Astrology", "🧠 Psychology", "🏛️ History"]
+      "Entertainment" => [ "🎵 Music", "🎬 Movies", "📚 Reading", "🎮 Gaming", "🎭 Theater", "🎪 Comedy", "🎤 Karaoke", "📺 TV Shows" ],
+      "Sports & Fitness" => [ "🏃‍♂️ Running", "🏋️‍♂️ Fitness", "🏀 Basketball", "⚽ Soccer", "🏈 Football", "🎾 Tennis", "🏌️‍♂️ Golf", "🏊‍♀️ Swimming", "🧘‍♀️ Yoga" ],
+      "Outdoor Activities" => [ "🥾 Hiking", "🧗‍♂️ Rock Climbing", "🏕️ Camping", "🚴‍♂️ Biking", "🏖️ Beach", "🌿 Nature", "⛷️ Skiing", "🏄‍♀️ Surfing" ],
+      "Food & Drink" => [ "🍕 Food", "👩‍🍳 Cooking", "🍷 Wine", "☕ Coffee", "🍺 Beer", "🍜 Ramen", "🍣 Sushi", "🌮 Mexican Food", "🍺 Craft Beer" ],
+      "Arts & Culture" => [ "🎨 Art", "📸 Photography", "🎭 Museums", "🎸 Guitar", "🎺 Jazz", "🎨 Painting", "🎭 Acting", "✍️ Writing" ],
+      "Technology & Business" => [ "💻 Technology", "🚀 Startups", "💼 Business", "📈 Finance", "🔬 Science" ],
+      "Animals & Nature" => [ "🐕 Dogs", "🐱 Cats", "🌱 Gardening", "🌿 Nature" ],
+      "Lifestyle" => [ "✈️ Travel", "🚶‍♀️ Walking", "🎲 Board Games", "🌟 Astrology", "🧠 Psychology", "🏛️ History" ]
     }
   end
 
@@ -201,11 +201,11 @@ class User < ApplicationRecord
 
   def interests_must_be_from_available_list
     return unless interests.present?
-    
+
     begin
       parsed_interests = JSON.parse(interests)
       invalid_interests = parsed_interests - AVAILABLE_INTERESTS
-      
+
       if invalid_interests.any?
         errors.add(:interests, "contains invalid interests: #{invalid_interests.join(', ')}")
       end

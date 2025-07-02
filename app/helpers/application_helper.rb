@@ -8,8 +8,8 @@ module ApplicationHelper
             interests.map do |interest|
               content_tag :label, class: "interest-checkbox" do
                 check_box_tag(
-                  "user[interest_list][]", 
-                  interest, 
+                  "user[interest_list][]",
+                  interest,
                   user.has_interest?(interest),
                   id: "interest_#{interest.gsub(/[^a-zA-Z0-9]/, '_')}"
                 ) +
@@ -40,18 +40,18 @@ module ApplicationHelper
   def profile_completion_badge(user)
     percentage = user.profile_completion_percentage
     css_class = case percentage
-                when 0..30 then "completion-low"
-                when 31..70 then "completion-medium"
-                else "completion-high"
-                end
-    
+    when 0..30 then "completion-low"
+    when 31..70 then "completion-medium"
+    else "completion-high"
+    end
+
     content_tag :span, "#{percentage}% complete", class: "profile-completion-badge #{css_class}"
   end
 
   def interest_tags(user, limit: nil)
     interests = limit ? user.interests_array.first(limit) : user.interests_array
     return content_tag(:span, "No interests set", class: "no-interests") if interests.empty?
-    
+
     content_tag :div, class: "interest-tags-display" do
       interests.map do |interest|
         content_tag :span, interest, class: "interest-tag"

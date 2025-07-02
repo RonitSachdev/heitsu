@@ -90,4 +90,4 @@ end
 puts "✅ Created #{created_events.count} events"
 
 # Store events in a global variable for other seed files
-$seed_events = created_events 
+$seed_events = created_events

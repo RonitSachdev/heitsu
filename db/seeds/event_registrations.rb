@@ -5,7 +5,7 @@ registration_count = 0
 $seed_events.each do |event|
   # Register 4-7 random users for each event
   registered_users = $seed_users.sample(rand(4..7))
-  
+
   registered_users.each do |user|
     EventRegistration.create!(
       user: user,
@@ -18,4 +18,4 @@ $seed_events.each do |event|
   end
 end
 
-puts "✅ Created #{registration_count} event registrations" 
+puts "✅ Created #{registration_count} event registrations"

@@ -14,7 +14,7 @@ puts "=" * 50
 seed_files = [
   'cleanup',
   'users',
-  'events', 
+  'events',
   'event_registrations',
   'user_swipes_and_matches',
   'messages'
