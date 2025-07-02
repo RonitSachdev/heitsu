@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_01_051643) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_112529) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_051643) do
     t.bigint "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "read_at"
     t.index ["group_id"], name: "index_messages_on_group_id"
     t.index ["recipient_id"], name: "index_messages_on_recipient_id"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
@@ -131,6 +132,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_051643) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
+    t.date "date_of_birth"
+    t.string "city"
+    t.text "interests"
+    t.string "occupation"
+    t.string "education"
+    t.string "height"
+    t.text "photos"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end

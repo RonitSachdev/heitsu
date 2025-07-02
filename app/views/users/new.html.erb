@@ -1,0 +1,215 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <%= link_to root_path, class: "auth-logo" do %>
+        <span class="logo-text">heitsu</span>
+      <% end %>
+      
+      <h2>Join heitsu</h2>
+      <p>Create your account and start connecting at events</p>
+    </div>
+    
+    <%= form_with model: @user, url: signup_path, local: true, class: "auth-form" do |f| %>
+      <% if @user.errors.any? %>
+        <div class="form-errors">
+          <ul>
+            <% @user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :first_name, "First Name", class: "form-label" %>
+          <%= f.text_field :first_name, 
+              class: "form-input", 
+              placeholder: "John",
+              required: true %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :last_name, "Last Name", class: "form-label" %>
+          <%= f.text_field :last_name, 
+              class: "form-input", 
+              placeholder: "Doe",
+              required: true %>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :username, "Username", class: "form-label" %>
+        <%= f.text_field :username, 
+            class: "form-input", 
+            placeholder: "johndoe",
+            required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :email, "Email", class: "form-label" %>
+        <%= f.email_field :email, 
+            class: "form-input", 
+            placeholder: "john@example.com",
+            required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :bio, "Bio (Optional)", class: "form-label" %>
+        <%= f.text_area :bio, 
+            class: "form-input form-textarea", 
+            placeholder: "Tell us about yourself and what events you love...",
+            rows: 3 %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :password, "Password", class: "form-label" %>
+        <%= f.password_field :password, 
+            class: "form-input", 
+            placeholder: "Create a strong password",
+            required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm Password", class: "form-label" %>
+        <%= f.password_field :password_confirmation, 
+            class: "form-input", 
+            placeholder: "Confirm your password",
+            required: true %>
+      </div>
+      
+      <div class="auth-actions">
+        <%= f.submit "Create Account", class: "btn btn-primary auth-submit" %>
+      </div>
+    <% end %>
+    
+    <div class="auth-footer">
+      <p>Already have an account? <%= link_to "Sign in", login_path, class: "auth-link" %></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 480px;
+  padding: 2rem;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.auth-logo .logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.auth-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: #6b7280;
+  margin-bottom: 0;
+}
+
+.auth-form {
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-errors {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-errors ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.form-errors li {
+  color: #991b1b;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.form-errors li:last-child {
+  margin-bottom: 0;
+}
+
+.auth-submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.auth-footer p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.auth-link {
+  color: #6366f1;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+  
+  .auth-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+</style> 

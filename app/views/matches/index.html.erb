@@ -1,0 +1,388 @@
+<div class="matches-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Your Matches</h1>
+      <p>Start conversations with people you've connected with at events</p>
+    </div>
+
+    <% if @matches.any? %>
+      <!-- Matches with Messages vs New Matches -->
+      <div class="matches-sections">
+        <!-- Active Conversations -->
+        <% if @matches_with_messages.any? %>
+          <div class="matches-section">
+            <h3 class="section-title">Active Conversations</h3>
+            <div class="matches-grid">
+              <% @matches_with_messages.each do |match| %>
+                <% other_user = match.other_user(current_user) %>
+                <div class="match-card active-conversation">
+                  <%= link_to match_path(match), class: "match-link" do %>
+                    <div class="match-header">
+                      <div class="match-avatar">
+                        <%= other_user.first_name.first.upcase %>
+                      </div>
+                      <div class="match-info">
+                        <h4><%= other_user.full_name %></h4>
+                        <p class="match-username">@<%= other_user.username %></p>
+                        <p class="match-event">
+                          <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                          <%= match.event.title %>
+                        </p>
+                      </div>
+                      <div class="conversation-indicator">
+                        <div class="message-count">
+                          <%= @message_counts[match.id] || 0 %>
+                        </div>
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <polyline points="9,18 15,12 9,6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- New Matches -->
+        <% if @matches_without_messages.any? %>
+          <div class="matches-section">
+            <h3 class="section-title">New Matches</h3>
+            <p class="section-subtitle">Start a conversation with these recent matches</p>
+            <div class="matches-grid">
+              <% @matches_without_messages.each do |match| %>
+                <% other_user = match.other_user(current_user) %>
+                <div class="match-card new-match">
+                  <%= link_to match_path(match), class: "match-link" do %>
+                    <div class="match-header">
+                      <div class="match-avatar">
+                        <%= other_user.first_name.first.upcase %>
+                      </div>
+                      <div class="match-info">
+                        <h4><%= other_user.full_name %></h4>
+                        <p class="match-username">@<%= other_user.username %></p>
+                        <p class="match-event">
+                          <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                          <%= match.event.title %>
+                        </p>
+                      </div>
+                      <div class="new-match-indicator">
+                        <span class="new-badge">New</span>
+                        <small class="match-time"><%= time_ago_in_words(match.created_at) %> ago</small>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-content">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <h3>No Matches Yet</h3>
+          <p>Start swiping on people at events to make your first match!</p>
+          
+          <div class="empty-actions">
+            <%= link_to "Start Swiping", swipe_path, class: "btn btn-primary" %>
+            <%= link_to "Browse Events", events_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+.matches-page {
+  padding: 2rem 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.page-header p {
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.matches-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.matches-section {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.section-subtitle {
+  margin: 0 0 2rem 0;
+  color: #6b7280;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.match-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.match-card:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.match-card.active-conversation {
+  border-left: 4px solid #10b981;
+}
+
+.match-card.new-match {
+  border-left: 4px solid #6366f1;
+  position: relative;
+}
+
+.match-card.new-match::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 0;
+  border-color: transparent #6366f1 transparent transparent;
+}
+
+.match-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.match-link:hover {
+  color: inherit;
+}
+
+.match-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.match-avatar {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.match-info {
+  flex: 1;
+}
+
+.match-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+  font-size: 1.125rem;
+}
+
+.match-username {
+  margin: 0 0 0.5rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.match-event {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.event-icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.conversation-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.message-count {
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  stroke-width: 2;
+}
+
+.new-match-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.new-badge {
+  background: #6366f1;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.match-time {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.empty-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  color: #d1d5db;
+  stroke-width: 1.5;
+  margin: 0 auto 2rem auto;
+}
+
+.empty-content h3 {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.empty-content p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+}
+
+.empty-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .matches-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .matches-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .match-header {
+    padding: 1rem;
+  }
+  
+  .match-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.125rem;
+  }
+  
+  .match-info h4 {
+    font-size: 1rem;
+  }
+  
+  .conversation-indicator,
+  .new-match-indicator {
+    align-items: center;
+  }
+  
+  .empty-actions {
+    flex-direction: column;
+  }
+  
+  .matches-section {
+    padding: 1.5rem;
+  }
+}
+</style> 

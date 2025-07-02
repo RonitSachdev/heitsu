@@ -1,0 +1,221 @@
+<div class="swipe-overview">
+  <div class="container">
+    <div class="page-header">
+      <h1>Start Swiping</h1>
+      <p>Choose an event to start meeting people</p>
+    </div>
+
+    <% if @registered_events.any? %>
+      <div class="events-grid">
+        <% @registered_events.each do |event| %>
+          <div class="event-swipe-card">
+            <%= link_to swipe_event_path(event), class: "event-link" do %>
+              <div class="event-card-header">
+                <div class="event-category-icon">
+                  <%= event.category.first.upcase %>
+                </div>
+                <div class="event-date">
+                  <%= event.event_date.strftime("%b %d") %>
+                </div>
+              </div>
+              
+              <div class="event-card-body">
+                <h3><%= event.title %></h3>
+                <p class="event-location"><%= event.location %></p>
+                
+                <div class="event-stats">
+                  <div class="stat-item">
+                    <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <%= pluralize(event.registered_users_count, 'attendee') %>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="event-card-footer">
+                <span class="swipe-cta">Start Swiping →</span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h3>No Events to Swipe On</h3>
+        <p>You need to register for events before you can start swiping on attendees.</p>
+        <%= link_to "Browse Events", events_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+.swipe-overview {
+  padding: 2rem 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.page-header p {
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.event-swipe-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.event-swipe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.15);
+}
+
+.event-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-link:hover {
+  color: inherit;
+}
+
+.event-card-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-category-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.event-date {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.event-card-body {
+  padding: 1.5rem;
+}
+
+.event-card-body h3 {
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+.event-location {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.event-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.stat-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.event-card-footer {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.swipe-cta {
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  color: #d1d5db;
+  stroke-width: 1.5;
+  margin: 0 auto 2rem auto;
+}
+
+.empty-state h3 {
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 767px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .event-stats {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+</style> 

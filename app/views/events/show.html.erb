@@ -1,0 +1,362 @@
+<div class="event-details">
+  <div class="container">
+    <div class="back-nav">
+      <%= link_to events_path, class: "back-button" do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+        Back to Events
+      <% end %>
+    </div>
+
+    <div class="event-header">
+      <div class="event-image">
+        <div class="event-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="event-info">
+        <div class="event-category">
+          <span class="category-badge"><%= @event.category %></span>
+        </div>
+        
+        <h1><%= @event.title %></h1>
+        
+        <div class="event-meta">
+          <div class="meta-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span><%= @event.event_date.strftime("%B %d, %Y at %I:%M %p") %></span>
+          </div>
+          
+          <div class="meta-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span><%= @event.location %></span>
+          </div>
+          
+          <div class="meta-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span><%= @available_spots %> of <%= @event.max_attendees %> spots available</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="registration-status">
+      <% if @event.past? %>
+        <div class="status-badge past">Event has ended</div>
+      <% elsif @event.full? %>
+        <div class="status-badge full">Event is full</div>
+      <% elsif @is_registered %>
+        <div class="status-badge registered">You're registered!</div>
+        <%= link_to "Unregister", unregister_event_path(@event), 
+            class: "btn btn-outline", 
+            data: { 
+              turbo_method: :delete,
+              turbo_confirm: "Are you sure you want to unregister from this event?" 
+            } %>
+      <% else %>
+        <div class="registration-actions">
+          <%= link_to "Register for Event", register_event_path(@event), 
+              data: { turbo_method: :post }, class: "btn btn-primary" %>
+          <p class="spots-remaining"><%= @event.available_spots %> spots remaining</p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="event-content">
+      <div class="content-section">
+        <h3>About This Event</h3>
+        <div class="description">
+          <%= simple_format(@event.description) %>
+        </div>
+      </div>
+
+      <% if @attendees.any? %>
+        <div class="content-section">
+          <h3>Who's Going (<%= @event.registered_users_count %>)</h3>
+          <div class="users-grid">
+            <% @attendees.each do |user| %>
+              <div class="user-card">
+                <div class="user-avatar">
+                  <%= user.first_name.first.upcase %>
+                </div>
+                <div class="user-info">
+                  <h4><%= user.full_name %></h4>
+                  <p>@<%= user.username %></p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="event-actions">
+      <%= link_to "Start Swiping", swipe_event_path(@event), class: "btn btn-primary btn-lg" %>
+      <p class="action-note">Meet other attendees and make connections!</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.event-details {
+  padding: 2rem 0;
+}
+
+.back-nav {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #6366f1;
+}
+
+.back-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.event-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.event-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-placeholder {
+  width: 100%;
+  max-width: 200px;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-placeholder svg {
+  width: 4rem;
+  height: 4rem;
+  color: #9ca3af;
+}
+
+.event-category {
+  margin-bottom: 1rem;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 2rem;
+}
+
+.event-info h1 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6b7280;
+}
+
+.meta-item .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.registration-status {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.status-badge.past {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.full {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.registered {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.registration-actions {
+  text-align: center;
+}
+
+.spots-remaining {
+  margin: 0.75rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.event-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.content-section {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.content-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.description {
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.user-card:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.user-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.user-info h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.user-info p {
+  margin: 0.25rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.event-actions {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.action-note {
+  margin: 1rem 0 0 0;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .event-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .event-info h1 {
+    font-size: 1.75rem;
+  }
+  
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

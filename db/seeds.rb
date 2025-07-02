@@ -17,10 +17,6 @@ seed_files = [
   'events', 
   'event_registrations',
   'user_swipes_and_matches',
-  'groups',
-  'group_members',
-  'group_swipes',
-  'group_join_requests',
   'messages'
 ]
 
@@ -38,13 +34,9 @@ puts "🎉 Events: #{Event.count}"
 puts "📝 Event Registrations: #{EventRegistration.count}"
 puts "👆 User Swipes: #{UserSwipe.count}"
 puts "💝 User Matches: #{UserMatch.count}"
-puts "👥 Groups: #{Group.count}"
-puts "👥 Group Members: #{GroupMember.count}"
-puts "👆 Group Swipes: #{GroupSwipe.count}"
-puts "📨 Group Join Requests: #{GroupJoinRequest.count}"
 puts "💬 Messages: #{Message.count}"
 puts "=" * 50
 puts "🚀 Your heitsu app is ready with comprehensive test data!"
 puts "💡 All users have password: 'password123'"
 puts "📧 Login with emails like: alice@example.com, bob@example.com, carol@example.com..."
-puts "🎯 Users are registered for multiple events with matches, groups, and active conversations!"
+puts "🎯 Users are registered for multiple events with matches and active conversations!"

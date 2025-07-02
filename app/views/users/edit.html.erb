@@ -1,0 +1,268 @@
+<div class="edit-profile">
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>Edit Profile</h1>
+      <%= link_to "Back to Profile", profile_path, class: "back-link" %>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-container">
+      <%= form_with model: current_user, url: profile_path, class: "profile-form" do |form| %>
+        <% if current_user.errors.any? %>
+          <div class="error-messages">
+            <h4><%= pluralize(current_user.errors.count, "error") %> prohibited this profile from being saved:</h4>
+            <ul>
+              <% current_user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-sections">
+          <!-- Personal Information -->
+          <div class="form-section">
+            <h3>Personal Information</h3>
+            
+            <div class="form-group">
+              <%= form.label :first_name, class: "form-label" %>
+              <%= form.text_field :first_name, class: "form-input" %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :last_name, class: "form-label" %>
+              <%= form.text_field :last_name, class: "form-input" %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :username, class: "form-label" %>
+              <%= form.text_field :username, class: "form-input" %>
+              <small class="form-help">This will be your unique identifier on the platform</small>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :email, class: "form-label" %>
+              <%= form.email_field :email, class: "form-input" %>
+            </div>
+          </div>
+
+          <!-- Profile Details -->
+          <div class="form-section">
+            <h3>Profile Details</h3>
+            
+            <div class="form-group">
+              <%= form.label :bio, "Bio (optional)", class: "form-label" %>
+              <%= form.text_area :bio, rows: 4, placeholder: "Tell others about yourself...", class: "form-input" %>
+              <small class="form-help">A brief description about yourself</small>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :interests, "Interests (optional)", class: "form-label" %>
+              <%= form.text_field :interests, placeholder: "e.g., hiking, music, technology", class: "form-input" %>
+              <small class="form-help">Comma-separated list of your interests</small>
+            </div>
+          </div>
+
+          <!-- Privacy Settings -->
+          <div class="form-section">
+            <h3>Privacy Settings</h3>
+            
+            <div class="form-group checkbox-group">
+              <%= form.check_box :profile_public, class: "form-checkbox" %>
+              <%= form.label :profile_public, "Make my profile visible to other users", class: "checkbox-label" %>
+              <small class="form-help">When enabled, other users can see your profile information</small>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <%= form.check_box :email_notifications, class: "form-checkbox" %>
+              <%= form.label :email_notifications, "Send me email notifications", class: "checkbox-label" %>
+              <small class="form-help">Get notified about matches, messages, and events</small>
+            </div>
+          </div>
+
+          <!-- Password Change -->
+          <div class="form-section">
+            <h3>Change Password</h3>
+            <p class="section-description">Leave blank to keep your current password</p>
+            
+            <div class="form-group">
+              <%= form.label :password, "New Password", class: "form-label" %>
+              <%= form.password_field :password, class: "form-input" %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :password_confirmation, "Confirm New Password", class: "form-label" %>
+              <%= form.password_field :password_confirmation, class: "form-input" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <%= form.submit "Update Profile", class: "btn btn-primary" %>
+          <%= link_to "Cancel", profile_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+.edit-profile {
+  padding: 2rem 0;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.back-link {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.form-container {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.error-messages {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  color: #dc2626;
+}
+
+.error-messages h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.error-messages ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.form-section {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2rem;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+.section-description {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-help {
+  display: block;
+  margin-top: 0.25rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.form-checkbox {
+  margin-top: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.checkbox-label {
+  flex: 1;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+</style>

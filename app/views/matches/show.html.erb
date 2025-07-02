@@ -1,0 +1,763 @@
+<div class="imessage-container">
+  <!-- iMessage Header -->
+  <div class="imessage-header">
+    <div class="header-content">
+      <%= link_to matches_path, class: "back-btn" do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      <% end %>
+      
+      <div class="contact-info">
+        <div class="contact-avatar">
+          <%= @other_user.first_name.first.upcase %>
+        </div>
+        <div class="contact-details">
+          <h3><%= @other_user.full_name %></h3>
+          <div class="match-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>Matched at <%= @match.event.title %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Area -->
+  <div class="messages-area" id="messagesArea">
+    <% if @messages.any? %>
+      <div class="messages-content">
+        <% @messages.group_by(&:created_at_date).each do |date, day_messages| %>
+          <div class="date-divider">
+            <span><%= date == Date.current ? "Today" : date.strftime("%B %d, %Y") %></span>
+          </div>
+          
+          <% day_messages.each do |message| %>
+            <div class="message-group <%= message.sender == current_user ? 'sent' : 'received' %>">
+              <div class="message-bubble">
+                <%= simple_format(message.content, {}, wrapper_tag: "span") %>
+              </div>
+              <div class="message-timestamp">
+                <%= message.created_at.strftime("%l:%M %p").strip %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-conversation">
+        <div class="conversation-starter">
+          <div class="starter-avatar">
+            <%= @other_user.first_name.first.upcase %>
+          </div>
+          <h3><%= @other_user.full_name %></h3>
+          <p>You matched with <%= @other_user.first_name %> at <%= @match.event.title %></p>
+          <div class="starter-suggestions">
+            <button class="suggestion-btn" data-message="Hey! 👋">Hey! 👋</button>
+            <button class="suggestion-btn" data-message="Looking forward to the event!">Looking forward to the event!</button>
+            <button class="suggestion-btn" data-message="What made you interested in this event?">What made you interested in this event?</button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    <%= form_with model: @new_message, url: messages_path, id: "messageForm", class: "message-form", local: true do |form| %>
+      <%= form.hidden_field :recipient_id, value: @other_user.id %>
+      <%= form.hidden_field :message_type, value: "direct" %>
+      
+      <div class="input-container">
+        <%= form.text_area :content, 
+            placeholder: "iMessage", 
+            class: "message-input",
+            rows: 1,
+            id: "messageInput",
+            autocomplete: "off",
+            required: true %>
+        
+        <button type="submit" class="send-btn" id="sendBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+          </svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .imessage-container {
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .imessage-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+    max-width: 100%;
+  }
+
+  .back-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007AFF;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+
+  .back-btn:hover {
+    background: rgba(0, 122, 255, 0.1);
+  }
+
+  .back-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+  }
+
+  .contact-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .contact-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-black);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .contact-details {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .contact-details h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-black);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .match-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    color: var(--color-grey-600);
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  .match-badge svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2;
+  }
+
+  .messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0;
+    background: var(--color-white);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .messages-content {
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .date-divider {
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .date-divider span {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-grey-600);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .message-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.25rem;
+    max-width: 75%;
+  }
+
+  .message-group.sent {
+    align-self: flex-end;
+    align-items: flex-end;
+  }
+
+  .message-group.received {
+    align-self: flex-start;
+    align-items: flex-start;
+  }
+
+  .message-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    word-wrap: break-word;
+    max-width: 100%;
+    position: relative;
+    line-height: 1.4;
+    font-size: 1rem;
+  }
+
+  .message-group.sent .message-bubble {
+    background: #007AFF;
+    color: white;
+    border-bottom-right-radius: 4px;
+    margin-left: 2rem;
+  }
+
+  .message-group.received .message-bubble {
+    background: #E9E9EB;
+    color: var(--color-black);
+    border-bottom-left-radius: 4px;
+    margin-right: 2rem;
+  }
+
+  .message-timestamp {
+    font-size: 0.7rem;
+    color: var(--color-grey-500);
+    margin-top: 0.25rem;
+    padding: 0 0.5rem;
+  }
+
+  .empty-conversation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+  }
+
+  .conversation-starter {
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .starter-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-black);
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0 auto 1rem;
+  }
+
+  .conversation-starter h3 {
+    margin: 0 0 0.5rem;
+    color: var(--color-black);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .conversation-starter p {
+    color: var(--color-grey-600);
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .starter-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .suggestion-btn {
+    background: #F2F2F7;
+    border: none;
+    border-radius: 20px;
+    padding: 0.75rem 1rem;
+    color: var(--color-black);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .suggestion-btn:hover {
+    background: #E5E5EA;
+    transform: scale(1.02);
+  }
+
+  .input-area {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1rem 2rem;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .input-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    background: #F2F2F7;
+    border-radius: 20px;
+    padding: 0.5rem;
+    max-width: 100%;
+  }
+
+  .message-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    outline: none;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    max-height: 100px;
+    min-height: 20px;
+    color: var(--color-black);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .message-input::placeholder {
+    color: #8E8E93;
+  }
+
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #007AFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover {
+    background: #0056CC;
+    transform: scale(1.05);
+  }
+
+  .send-btn:disabled {
+    background: #C7C7CC;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .send-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .imessage-container {
+      height: 100vh;
+      height: -webkit-fill-available;
+    }
+
+    .message-group {
+      max-width: 85%;
+    }
+
+    .message-bubble {
+      font-size: 0.95rem;
+    }
+
+    .input-area {
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-content {
+      padding: 0 0.75rem;
+    }
+
+    .contact-details h3 {
+      font-size: 1rem;
+    }
+
+    .match-badge {
+      font-size: 0.75rem;
+    }
+
+    .message-group {
+      max-width: 90%;
+    }
+
+    .conversation-starter {
+      padding: 1rem;
+    }
+
+    .starter-avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+  }
+
+  /* Animations */
+  .message-group {
+    animation: messageSlideIn 0.3s ease-out;
+  }
+
+  @keyframes messageSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .suggestion-btn {
+    animation: suggestionFadeIn 0.5s ease-out forwards;
+  }
+
+  .suggestion-btn:nth-child(1) { animation-delay: 0.1s; }
+  .suggestion-btn:nth-child(2) { animation-delay: 0.2s; }
+  .suggestion-btn:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes suggestionFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Error notification */
+  .error-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: #ff4444;
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+    z-index: 1000;
+    animation: slideInError 0.3s ease;
+  }
+
+  .error-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .error-content button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  @keyframes slideInError {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesArea = document.getElementById('messagesArea');
+    const messageForm = document.getElementById('messageForm');
+
+    // Auto-resize textarea
+    function autoResize() {
+      messageInput.style.height = 'auto';
+      messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
+    }
+
+    messageInput.addEventListener('input', autoResize);
+    
+    // Enhanced Enter key handling
+    messageInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        // Send message with Enter (prevent Shift+Enter from sending)
+        e.preventDefault();
+        e.stopPropagation();
+        if (messageInput.value.trim() && !sendBtn.disabled) {
+          sendMessage();
+        }
+        return false;
+      }
+    });
+
+    // Enable/disable send button
+    function updateSendButton() {
+      const hasContent = messageInput.value.trim().length > 0;
+      sendBtn.disabled = !hasContent;
+      sendBtn.style.opacity = hasContent ? '1' : '0.5';
+    }
+
+    messageInput.addEventListener('input', updateSendButton);
+    updateSendButton(); // Initial state
+
+    // Enhanced send message function with instant UI feedback
+    function sendMessage() {
+      if (!messageInput.value.trim() || sendBtn.disabled) {
+        return;
+      }
+
+      const messageText = messageInput.value.trim();
+      const currentTime = new Date();
+      
+      // Add message to UI instantly
+      addMessageToUI(messageText, true, currentTime);
+      
+      // Clear input immediately
+      messageInput.value = '';
+      autoResize();
+      updateSendButton();
+      
+      // Scroll to bottom
+      scrollToBottom();
+      
+      // Send to server in background
+      sendMessageToServer(messageText);
+    }
+
+    // Add message to UI instantly
+    function addMessageToUI(content, isSent, timestamp) {
+      const messagesContent = document.querySelector('.messages-content');
+      if (!messagesContent) return;
+      
+      // Create message element
+      const messageGroup = document.createElement('div');
+      messageGroup.className = `message-group ${isSent ? 'sent' : 'received'}`;
+      
+      const messageBubble = document.createElement('div');
+      messageBubble.className = 'message-bubble';
+      messageBubble.textContent = content;
+      
+      const messageTimestamp = document.createElement('div');
+      messageTimestamp.className = 'message-timestamp';
+      messageTimestamp.textContent = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      messageGroup.appendChild(messageBubble);
+      messageGroup.appendChild(messageTimestamp);
+      
+      // Add to messages container
+      messagesContent.appendChild(messageGroup);
+      
+      // Add animation
+      messageGroup.style.opacity = '0';
+      messageGroup.style.transform = 'translateY(20px)';
+      
+      requestAnimationFrame(() => {
+        messageGroup.style.transition = 'all 0.3s ease';
+        messageGroup.style.opacity = '1';
+        messageGroup.style.transform = 'translateY(0)';
+      });
+    }
+
+    // Send message to server in background
+    function sendMessageToServer(content) {
+      const formData = new FormData();
+      formData.append('message[content]', content);
+      formData.append('message[message_type]', 'direct');
+      formData.append('message[recipient_id]', '<%= @other_user.id %>');
+      formData.append('authenticity_token', document.querySelector('[name="csrf-token"]').content);
+
+      fetch('<%= messages_path %>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          return response.json();
+        } else {
+          // If not JSON, just return success since the message was sent
+          return { success: true };
+        }
+      })
+      .then(data => {
+        if (data.success === false) {
+          throw new Error(data.error || data.errors?.join(', ') || 'Message failed to send');
+        }
+        console.log('Message sent successfully:', data);
+      })
+      .catch(error => {
+        console.error('Error sending message:', error);
+        showMessageError(error.message);
+      });
+    }
+
+    // Show error if message fails
+    function showMessageError(errorMessage = 'Message failed to send') {
+      const errorNotification = document.createElement('div');
+      errorNotification.className = 'error-notification';
+      errorNotification.innerHTML = `
+        <div class="error-content">
+          <span>${errorMessage}</span>
+          <button onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+      `;
+      document.body.appendChild(errorNotification);
+      
+      setTimeout(() => {
+        errorNotification.remove();
+      }, 5000);
+    }
+
+    // Handle send button click
+    sendBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      sendMessage();
+    });
+
+    // Handle form submission
+    messageForm.addEventListener('submit', function(e) {
+      if (!messageInput.value.trim()) {
+        e.preventDefault();
+        return;
+      }
+    });
+
+    // Scroll to bottom
+    function scrollToBottom() {
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    // Scroll to bottom on load
+    setTimeout(scrollToBottom, 100);
+
+    // Handle suggestion buttons
+    document.querySelectorAll('.suggestion-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const message = this.dataset.message;
+        messageInput.value = message;
+        autoResize();
+        updateSendButton();
+        messageInput.focus();
+      });
+    });
+
+    // Auto-focus input on mobile
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        messageInput.focus();
+      }, 500);
+    }
+
+    // Handle page visibility for auto-focus
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && window.innerWidth <= 768) {
+        setTimeout(() => {
+          messageInput.focus();
+        }, 100);
+      }
+    });
+  });
+</script> 

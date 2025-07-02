@@ -24,6 +24,11 @@ class UserMatch < ApplicationRecord
     user1 == user || user2 == user
   end
 
+  # Get messages between the matched users
+  def messages
+    Message.between_users(user1, user2)
+  end
+
   # Check if match exists between two users for an event
   def self.exists_between?(user_a, user_b, event)
     user1, user2 = [user_a.id, user_b.id].sort

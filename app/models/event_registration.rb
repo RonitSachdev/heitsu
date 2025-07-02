@@ -25,7 +25,14 @@ class EventRegistration < ApplicationRecord
     status == 'cancelled'
   end
 
+  # Set default status
+  after_initialize :set_default_status, if: :new_record?
+
   private
+
+  def set_default_status
+    self.status ||= 'registered'
+  end
 
   def event_not_full
     return unless event&.full? && status == 'registered'
